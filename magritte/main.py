@@ -16,8 +16,8 @@ Options:
 --skipped : list packages that were skipped because of errors
 --verbose: display more messages
 
-Options can be combined, except the get and push options;
-the workflow is to reset, get, get again if required, then push.
+Options can be combined, except the get and save (or push) options;
+the workflow is to reset, get, get again if required, then save (or push).
 
 Created files and directories are under ~/.magritte:
 dump/ : temp dir for downloaded source directories
