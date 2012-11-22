@@ -45,8 +45,8 @@ class Usage(Exception):
 def main():
     try:
         try:
-            opts, args = getopt.getopt(sys.argv[1:], "hrgplsv",
-                ["help", "reset", "get", "push", "list", "skipped", "verbose"])
+            opts, args = getopt.getopt(sys.argv[1:], "hrgsp",
+                ["help", "reset", "get", "save", "push", "list", "skipped", "verbose"])
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -58,13 +58,8 @@ def main():
     if not opts:
         print __doc__
         sys.exit(0)
-    verbose = False
-    get = False
-    push = False
-    list_downloaded = False
-    skipped = False
-    reset = False
 
+    verbose =  get = save = push = list_downloaded = skipped = reset = False
 
     for o, a in opts:
         if o in ("-h", "--help"):
@@ -72,27 +67,36 @@ def main():
             sys.exit(0)
 
         # process arguments
-        if o in ("-v", "--verbose"):
-            verbose = True
         if o in ("-r", "--reset"):
             reset = True
         if o in ("-g", "--get"):
             get = True
+        if o in ("-s", "--save"):
+            save = True
         if o in ("-p", "--push"):
             push = True
-        if o in ("-l", "--list"):
+        if o in ("--list",):
             list_downloaded = True
-        if o in ("-s", "--skipped"):
+        if o in ("--skipped",):
             skipped = True
+        if o in ("--verbose",):
+            verbose = True
 
     if verbose:
         logger.setLevel(logging.INFO)
-    if push and get:
-        logger.error("Can't get and push at the same time; get, then push...")
+
+    # validate combination of options
+
+    if get and (save or push):
+        if save:
+            logger.error("Can't get and save at the same time; get, then save...")
+        if push:
+            logger.error("Can't get and push at the same time; get, then push...")
         sys.exit(2)
 
-    if reset or get or list or skipped or push:
-        getter = Getter()
+    getter = Getter()
+
+    if reset or get or list or skipped :
         if reset:
             getter.package_cache.reset()
         if get:
@@ -101,12 +105,18 @@ def main():
             getter.list_downloaded_versions()
         if skipped:
             getter.list_skipped_packages()
+
+    if save or push:
+        pusher = Pusher(getter.package_cache)
+        pusher.build_requirements()
+
+        if save:
+            pusher.save_requirements_to_local_dists_dir()
+
         if push:
             if not args:
                 logger.error("Push requires a pypi server argument")
                 sys.exit(2)
-            pusher = Pusher(getter.package_cache)
-            pusher.build_requirements()
             server = args[0]
             pusher.push_requirements_to_pypi_server(server)
 
