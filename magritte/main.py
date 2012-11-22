@@ -10,10 +10,11 @@ Options:
 -h or --help : display this help
 -r or --reset : delete all created files and directories from local cache (in ~/.magritte/)
 -g or --get <lists of files> : fetch packages listed from text files, in "pip urls" format
+-s or --save : build requirement file and save packages as tgz archives in ~/.magritte/dists/
 -p or --push <server>: build requirement file and push packages to a specified pypi server (defined in ~/.pypirc)
--l or --list : list downloaded packages versions
--s or --skipped : list packages that were skipped because of errors
--v or --verbose: display more messages
+--list : list downloaded packages versions
+--skipped : list packages that were skipped because of errors
+--verbose: display more messages
 
 Options can be combined, except the get and push options;
 the workflow is to reset, get, get again if required, then push.
@@ -21,8 +22,10 @@ the workflow is to reset, get, get again if required, then push.
 Created files and directories are under ~/.magritte:
 dump/ : temp dir for downloaded source directories
 versions/ : collection of all downloaded source directories
+dists/ : collection of saved distribution packages in tgz format
 downloaded_packages.json : list of downloaded packages with their dependencies
-requirements.txt : list of versioned packages in order of dependency (to use in your project)
+requirements-in-pip-format.txt : list of versioned packages to use with a local pypi server
+requirements-in-tgz-format.txt : list of versioned packages to use with a local http server
 skipped-packages.txt :  list of skipped packages; the get command can use it to retry downloading
 
 Dependencies:
