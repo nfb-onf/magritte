@@ -97,7 +97,7 @@ class Collector(object):
     def format_requirements(self):
         requirements = []
         for name,version in self.collection.iterkeys():
-            requirements.append("%s==%s" % (name, version))
+            requirements.append("%s-%s" % (name, version))
         return requirements
 
 if __name__ == '__main__':
