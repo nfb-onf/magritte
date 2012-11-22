@@ -37,7 +37,7 @@ class Getter(object):
 
 
     def get_packages_from_lists_of_urls(self, url_files):
-        all_downloaded_packages = []
+        all_downloaded_packages = self.package_cache.all_downloaded_packages
         urls = self.get_urls_from_filenames(url_files)
         for url in urls:
             logger.info("Getting package %s ...", url)
