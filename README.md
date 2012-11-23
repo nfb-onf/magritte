@@ -29,3 +29,8 @@ skipped-packages.txt :  list of skipped packages; the get command can use it to 
 Dependencies:  
 The magritte command relies on the presence of a ~/.pypirc file defining the uploading server.  
 (See: http://docs.python.org/2/distutils/packageindex.html)  
+
+About the local dists directory:  
+The ~/.magritte/dists/ directory can be served with any http server, or used as a local file repository  
+It is not emptied with the reset command, so obsolete or unused packages must be removed manually.  
+
