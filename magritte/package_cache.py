@@ -19,22 +19,22 @@ class PackageCache(object):
     def __init__(self):
         self.utils = Utils()
 
-        pypip_dir = "%s/.magritte" % os.path.expanduser('~')
-        self.utils.make_dir(pypip_dir)
+        cache_dir = "%s/.magritte" % os.path.expanduser('~')
+        self.utils.make_dir(cache_dir)
 
-        self.dumps_dir = "%s/dump" % pypip_dir
+        self.dumps_dir = "%s/dump" % cache_dir
         self.utils.make_dir(self.dumps_dir)
 
-        self.versions_dir = "%s/versions" % pypip_dir
+        self.versions_dir = "%s/versions" % cache_dir
         self.utils.make_dir(self.versions_dir)
 
-        self.dists_dir = "%s/dists" % pypip_dir
+        self.dists_dir = "%s/dists" % cache_dir
         self.utils.make_dir(self.dists_dir)
 
-        self.downloaded_packages_json_filename = "%s/%s" % (pypip_dir, 'downloaded_packages.json')
-        self.skipped_packages_urls_filename = "%s/%s" % (pypip_dir, 'skipped-packages.txt')
-        self.requirements_pip_filename = "%s/%s" % (pypip_dir, 'requirements-in-pip-format.txt')
-        self.requirements_tgz_filename = "%s/%s" % (pypip_dir, 'requirements-in-tgz-format.txt')
+        self.downloaded_packages_json_filename = "%s/%s" % (cache_dir, 'downloaded_packages.json')
+        self.skipped_packages_urls_filename = "%s/%s" % (cache_dir, 'skipped-packages.txt')
+        self.requirements_pip_filename = "%s/%s" % (cache_dir, 'requirements-in-pip-format.txt')
+        self.requirements_tgz_filename = "%s/%s" % (cache_dir, 'requirements-in-tgz-format.txt')
         self.skipped_packages = []
         self.all_downloaded_packages = []
 
@@ -92,7 +92,8 @@ class PackageCache(object):
     def delete_result_files(self):
         self.utils.delete_file(self.downloaded_packages_json_filename)
         self.utils.delete_file(self.skipped_packages_urls_filename)
-        self.utils.delete_file(self.requirements_filename)
+        self.utils.delete_file(self.requirements_pip_filename)
+        self.utils.delete_file(self.requirements_tgz_filename)
 
     def create_downloaded_packages_json_file(self, all_downloaded_packages):
         downloaded_packages_json = simplejson.dumps(all_downloaded_packages, indent='  ')
