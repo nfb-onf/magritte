@@ -27,26 +27,11 @@ class Collector(object):
                 other_versions.append((other_package_name, other_package_version))
         return other_versions
 
-    def lowest(self, package_name, package_version, other_versions):
-        lowest_version = package_version
-        for other_package_name, other_package_version in other_versions:
-            if other_package_version < lowest_version:
-                lowest_version = other_package_version
-        return lowest_version
-
-    def highest(self, package_name, package_version, other_versions):
-        highest_version = package_version
-        for other_package_name, other_package_version in other_versions:
-            if other_package_version > highest_version:
-                highest_version = other_package_version
-        return highest_version
-
-
     def append_to_packages_list(self, package_name, package_version):
-        other_versions =  self.get_other_versions(package_name, package_version)
+        other_versions =  dict(self.get_other_versions(package_name, package_version)).values()
         if other_versions:
-            lowest = self.lowest(package_name, package_version, other_versions)
-            highest = self.highest(package_name, package_version, other_versions)
+            lowest = min(other_versions + [package_version])
+            highest = max(other_versions + [package_version])
             if highest < lowest:
                 raise ImpossibleVersionComparisonException("version %s of %s cannot be higher than %s" % (lowest, package_name, highest))
             if package_version < highest:
@@ -57,23 +42,13 @@ class Collector(object):
                 return
         self.collection[package_name, package_version] = package_name, package_version
 
-    def get_keys(self):
-        keys = []
-        for k in self.collection.iterkeys():
-            keys.append(k)
-        return keys
-
-    def get_values(self):
-        values = []
-        for v in self.collection.itervalues():
-            values.append(v)
-        return values
 
     def collect_dependencies(self, package_dependencies):
         for dependency in package_dependencies:
             package_name = dependency[0]
             package_version = dependency[1]
             self.append_to_packages_list(package_name, package_version)
+
 
     def traverse_dependencies(self, package):
         package_name = package[0][0]
@@ -85,7 +60,6 @@ class Collector(object):
         package_dependencies = None
         if len(package) == 2:
             package_dependencies = package[1]
-
         if package_dependencies:
             self.collect_dependencies(package_dependencies)
         self.append_to_packages_list(package_name, package_version)
