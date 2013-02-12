@@ -1,4 +1,3 @@
-
 import os, tempfile
 import shlex, subprocess, shutil
 import re
@@ -36,36 +35,31 @@ class Getter(object):
             shutil.rmtree(tmp_pip_build_dir)
 
 
-    def get_packages_from_lists_of_urls(self, url_files):
-        all_downloaded_packages = self.package_cache.all_downloaded_packages
-        urls = self.get_urls_from_filenames(url_files)
-        for url in urls:
-            logger.info("Getting package %s ...", url)
-            self.clean_pip_build_dirs()
-            success = False
-            args = shlex.split('pip install --no-install --force-reinstall --ignore-installed --upgrade "%s" -b "%s"' % (url, self.package_cache.dumps_dir))
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=open(os.devnull))
-            stdout = p.stdout.readlines()
-            downloaded_names = None
-            for line in stdout:
-                match = re.match("^Successfully downloaded (.*)", line)
-                if match:
-                    downloaded_names = match.groups()[0].split(' ')
-                else:
-                    continue
-                success = True
-                break
-            if not success:
-                logger.info('Error when downloading %s : %s', url, ''.join(stdout))
-                self.package_cache.skipped_packages.append(url)
+    def _download_package_from_url(self, url):
+        logger.info("Getting package %s ...", url)
+        self.clean_pip_build_dirs()
+        success = False
+        args = shlex.split('pip install --no-install --force-reinstall --ignore-installed --upgrade "%s" -b "%s"' % (url, self.package_cache.dumps_dir))
+        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=open(os.devnull))
+        stdout = p.stdout.readlines()
+        downloaded_names = None
+        for line in stdout:
+            match = re.match("^Successfully downloaded (.*)", line)
+            if match:
+                downloaded_names = match.groups()[0].split(' ')
+            else:
                 continue
+            success = True
+            break
+        if not success:
+            logger.info('Error when downloading %s : %s', url, ''.join(stdout))
+            self.package_cache.skipped_packages.append(url)
+        if downloaded_names:
+            return self.find_downloaded_packages(downloaded_names)
 
-            if downloaded_names:
-                downloaded_packages = self.find_downloaded_packages(downloaded_names)
-                if downloaded_packages and downloaded_packages not in all_downloaded_packages:
-                    all_downloaded_packages.append(downloaded_packages)
 
-        self.package_cache.create_downloaded_packages_json_file(all_downloaded_packages)
+    def _post_download(self, downloaded_packages):
+        self.package_cache.create_downloaded_packages_json_file(downloaded_packages)
 
         if self.package_cache.skipped_packages:
             logger.error('%s = \n%s ', self.package_cache.skipped_packages_urls_filename, self.package_cache.skipped_packages)
@@ -74,6 +68,24 @@ class Getter(object):
             skipped_packages_file.close()
 
         self.clean_pip_build_dirs()
+
+
+    def download_package_from_url(self, urls):
+        url = urls[0]
+        print 'download_package_from_url =', url
+        downloaded_packages = self._download_package_from_url(url)
+        self._post_download([downloaded_packages])
+
+
+    def get_packages_from_lists_of_urls(self, url_files):
+        all_downloaded_packages = self.package_cache.all_downloaded_packages
+        for url in self.get_urls_from_filenames(url_files):
+            # download from url
+            downloaded_packages = self._download_package_from_url(url)
+            if downloaded_packages and downloaded_packages not in all_downloaded_packages:
+                all_downloaded_packages.append(downloaded_packages)
+
+        self._post_download(all_downloaded_packages)
 
 
     def find_downloaded_packages(self, downloaded_names):
@@ -101,6 +113,7 @@ class Getter(object):
             package.append(deps)
         return package
 
+
     def get_urls_from_filenames(self,filenames):
         urls_from_filenames=[]
         for filename in filenames:
@@ -122,11 +135,13 @@ class Getter(object):
     def normalize_pkg_name(self, name):
         return name.lower().replace('-','_')
 
+
     def list_downloaded_versions(self):
         print "Downloaded packages :"
         for version_dir in os.listdir(self.package_cache.versions_dir):
             print version_dir
         print
+
 
     def list_skipped_packages(self):
         print "Skipped packages :"
