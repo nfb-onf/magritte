@@ -8,7 +8,7 @@ if get_python_version() < MINIMAL_PYTHON_VERSION:
 
 setup(
     name = "magritte",
-    version = "0.2",
+    version = "0.3",
     packages = packages,
     author = "NFB/ONF",
     author_email = "m.lavallee@onf.ca",

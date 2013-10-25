@@ -74,11 +74,17 @@ class Collector(object):
             requirements.append("%s-%s" % (name, version))
         return requirements
 
+    def get_requirements(self):
+        requirements = []
+        for name, version in self.collection.iterkeys():
+            requirements.append((name, version))
+        return requirements
+
 if __name__ == '__main__':
     from sys import stdin, stdout
     import simplejson
     structure = simplejson.load(stdin)
-    collector  = Collector()
+    collector = Collector()
     collector.traverse(structure)
     stdout.write("\n".join(collector.format_requirements()))
 
