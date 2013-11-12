@@ -1,5 +1,6 @@
 import os
 import shlex, subprocess
+import utils
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +27,8 @@ class Pusher(object):
             req_file_name = '%s-%s.tgz' % (req_name, req_version)
             req_package = "%s-%s" % (req_name, req_version)
             requirements.append(req_file_name)
-            dist_file = '%s/%s' % (dists_dir, req_file_name)
+            utils.Utils().make_dir("%s/%s" % (dists_dir, req_name))
+            dist_file = '%s/%s/%s' % (dists_dir, req_name, req_file_name)
             command = 'tar -zcf %s %s' % (dist_file, req_package)
             args = shlex.split(command)
             logger.info("creating dist:%s", dist_file)
