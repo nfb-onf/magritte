@@ -23,7 +23,7 @@ class Pusher(object):
         versions_dir = self.package_cache.versions_dir
         requirements = []
         for (req_name, req_version) in self.requirements:
-            req_file_name = '%s__%s.tgz' % (req_name, req_version)
+            req_file_name = '%s-%s.tgz' % (req_name, req_version)
             req_package = "%s-%s" % (req_name, req_version)
             requirements.append(req_file_name)
             dist_file = '%s/%s' % (dists_dir, req_file_name)
