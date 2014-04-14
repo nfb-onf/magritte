@@ -8,11 +8,11 @@ if get_python_version() < MINIMAL_PYTHON_VERSION:
 
 setup(
     name = "magritte",
-    version = "0.4",
+    version = "0.5",
     packages = packages,
     author = "NFB/ONF",
     author_email = "m.lavallee@onf.ca",
-    description = "Collection of utilities to maintain a local pypi server",
+    description = "Collection of utilities to maintain a local pip packages repository in tar.gz format",
     url = 'https://github.com/mlavallee/magritte.git',
     install_requires=['pip>=1.0', 'simplejson>=2.1.0'],
     entry_points={

@@ -29,7 +29,7 @@ class Pusher(object):
             requirements.append(req_file_name)
             utils.Utils().make_dir("%s/%s" % (dists_dir, req_name))
             dist_file = '%s/%s/%s' % (dists_dir, req_name, req_file_name)
-            command = 'tar -zcf %s %s' % (dist_file, req_package)
+            command = 'tar --exclude='./.git' -zcf %s %s' % (dist_file, req_package)
             args = shlex.split(command)
             logger.info("creating dist:%s", dist_file)
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=versions_dir)
