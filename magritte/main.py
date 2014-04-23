@@ -16,6 +16,7 @@ Options:
 --list : list downloaded packages versions
 --skipped : list packages that were skipped because of errors
 --verbose: display more messages
+--version: show version
 
 Options can be combined, except the get and save (or push) options;
 the workflow is to reset, get, get again if required, then save (or push).
@@ -44,6 +45,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+import pkg_resources
+
 from magritte.getter import Getter
 from magritte.pusher import Pusher
 
@@ -51,8 +54,11 @@ class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+def version():
+    return pkg_resources.get_distribution("magritte").version
+
 def main():
-    long_options = ["help", "reset", "download", "get", "save", "push", "list", "skipped", "verbose"]
+    long_options = ["help", "reset", "download", "get", "save", "push", "list", "skipped", "verbose", "version"]
     short_options = 'hrdgsp'
     options_dict = dict()
     try:
@@ -67,6 +73,7 @@ def main():
         sys.exit(2)
 
     if not opts:
+        print "magritte %s" % version()
         print __doc__
         sys.exit(0)
 
@@ -88,12 +95,14 @@ def main():
             save = True
         if o in ("-p", "--push"):
             push = True
-        if o in ("--list",):
+        if o in ("-l", "--list",):
             list_downloaded = True
         if o in ("--skipped",):
             skipped = True
         if o in ("--verbose",):
             verbose = True
+        if o in ("--version",):
+            print version()
 
     if verbose:
         logger.setLevel(logging.INFO)
