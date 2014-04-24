@@ -1,10 +1,13 @@
+Magritte
+========
+
 Magritte is a command with options to fetch python packages from a list of pip urls,
 including their dependencies, save them to a local cache or upload them to a pypi server.
 
-Usage: magritte
+## Usage: magritte
 (without options it displays this help)
 
-Options:
+## Options:
 -h or --help : display this help
 -r or --reset : delete all created files and directories from local cache (in ~/.magritte/)
 -d or --download <package url> : fetch one package only (will also fetch dependent packages)
@@ -18,6 +21,7 @@ Options:
 Options can be combined, except the get and save (or push) options;
 the workflow is to reset, get, get again if required, then save (or push).
 
+## Content Organization:
 Created files and directories are under ~/.magritte:
 dump/ : temp dir for downloaded source directories
 versions/ : collection of all downloaded source directories
@@ -27,11 +31,13 @@ requirements-in-pip-format.txt : list of versioned packages to use with a local 
 requirements-in-tgz-format.txt : list of versioned packages to use with a local http server
 skipped-packages.txt :  list of skipped packages; the get command can use it to retry downloading
 
-Dependencies:
+## Dependencies:
 The magritte command relies on the presence of a ~/.pypirc file defining the uploading server.
 (See: http://docs.python.org/2/distutils/packageindex.html)
 
-About the local dists directory:
+## About the local dists directory:
 The ~/.magritte/dists/ directory can be served with any http server, or used as a local file repository
 It is not emptied with the reset command, so obsolete or unused packages must be removed manually.
 
+## To do:
+- [ ] Improve documentation
